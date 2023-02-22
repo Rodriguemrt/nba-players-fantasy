@@ -1,9 +1,9 @@
 import Head from "next/head";
-import styles from "../styles/Home.module.css";
-import { getJoueurs, getTeams } from "./api/req";
+import styles from "../../styles/Home.module.css";
+import { getJoueurs, getTeams } from "../api/req";
 import { useRouter } from "next/router";
 
-export default function Home({ teams, players }) {
+export default function Equipe({ teams }) {
   const router = useRouter();
   return (
     <div className={styles.container}>
@@ -13,9 +13,32 @@ export default function Home({ teams, players }) {
 
       <main>
         <h1 className={styles.title}>NBA PLAYER FANTASY</h1>
-        <div className={styles.grid}>Choisir un affichage</div>{" "}
-        <button onClick={() => router.push("/equipes")}>Equipe</button>
-        <button onClick={() => router.push("/joueurs")}>Joueurs</button>
+        <div className={styles.grid}>
+          {teams.map((team, index) => {
+            return (
+              <button
+                key={index}
+                className={styles.card}
+                onClick={() => {
+                  router.push(`/equipes/${team.attributes.ville}`);
+                }}
+              >
+                <div>
+                  <h3>
+                    Équipe : {team.attributes.ville} - {team.attributes.nom}
+                  </h3>
+                </div>
+                Cliquez pour voir les joueurs
+              </button>
+            );
+          })}
+        </div>
+        <div>
+          <button onClick={() => router.push("/")}>Retour</button>
+          <button onClick={() => router.push("/equipes/create")}>
+            Ajout d'une équipe
+          </button>
+        </div>
       </main>
     </div>
   );
@@ -47,6 +70,8 @@ export async function getStaticProps() {
 
   const responseJson = await responseTeams.json();
   const responseJsonJoueurs = await responseJoueurs.json();
+
+  console.log(responseJson);
 
   return {
     props: {
